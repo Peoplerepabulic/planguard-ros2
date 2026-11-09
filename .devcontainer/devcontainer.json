@@ -1,0 +1,19 @@
+{
+  "name": "PlanGuard-ROS2 (Jazzy + Gazebo Harmonic)",
+  "build": { "dockerfile": "Dockerfile" },
+  "features": {
+    "ghcr.io/devcontainers/features/desktop-lite:1": {}
+  },
+  "remoteUser": "ubuntu",
+  "forwardPorts": [6080],
+  "portsAttributes": {
+    "6080": { "label": "Linux desktop (noVNC, password: vscode)", "onAutoForward": "notify" }
+  },
+  "hostRequirements": { "cpus": 2, "memory": "8gb" },
+  "postCreateCommand": "bash .devcontainer/post_create.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-vscode.cpptools", "ms-python.python", "ms-iot.vscode-ros"]
+    }
+  }
+}

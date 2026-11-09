@@ -1,0 +1,35 @@
+# Frozen parameters for the reported experiment. Geometry must match robot.urdf.xacro:
+# collision footprint: chassis 0.40 x 0.30 plus wheel spheres r=0.06 at y=+-0.17
+# (half-width 0.23), lidar at base origin.
+cruise_controller:
+  ros__parameters:
+    k_linear: 0.5
+    k_angular: 1.5
+    v_max: 0.5
+    w_max: 1.5
+    goal_tolerance: 0.3
+    align_threshold: 0.8
+    rate_hz: 20.0
+
+safety_shield:
+  ros__parameters:
+    lidar_x: 0.0
+    lidar_y: 0.0
+    scan_timeout: 0.5
+    brake:
+      front_x: 0.20
+      half_width: 0.23
+      lateral_margin: 0.05
+      d_stop: 0.20
+      d_slow: 0.70
+      v_max: 0.5
+    cbf:
+      circle_x: [0.12, -0.12]
+      circle_r: [0.26, 0.26]
+      margin: 0.05
+      alpha: 1.5
+      w_weight: 0.0144
+      v_min: -0.2
+      v_max: 0.5
+      w_max: 1.5
+      bin_deg: 5.0

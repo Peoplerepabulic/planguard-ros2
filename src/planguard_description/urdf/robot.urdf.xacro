@@ -1,0 +1,203 @@
+<?xml version="1.0"?>
+<robot name="planguard" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- ===== Dimensions (single source of truth; keep cad/parts.py and shield.yaml in sync) ===== -->
+  <xacro:property name="chassis_l" value="0.40"/>
+  <xacro:property name="chassis_w" value="0.30"/>
+  <xacro:property name="chassis_h" value="0.12"/>
+  <xacro:property name="chassis_z" value="0.04"/>      <!-- chassis center above base_link -->
+  <xacro:property name="chassis_mass" value="6.0"/>
+  <xacro:property name="wheel_r" value="0.06"/>
+  <xacro:property name="wheel_w" value="0.04"/>
+  <xacro:property name="wheel_y" value="0.17"/>
+  <xacro:property name="wheel_mass" value="0.4"/>
+  <xacro:property name="caster_r" value="0.02"/>
+  <xacro:property name="caster_x" value="0.15"/>
+  <!-- casters sit 3 mm above the ground so the drive wheels always carry the load
+       (four coplanar contacts are statically indeterminate and make the wheels slip) -->
+  <xacro:property name="caster_z" value="${caster_r - wheel_r + 0.003}"/>
+  <xacro:property name="lidar_z" value="0.20"/>        <!-- lidar optical center above base_link -->
+  <xacro:property name="lidar_r" value="0.035"/>
+  <xacro:property name="lidar_h" value="0.05"/>
+  <xacro:property name="bracket_z" value="${chassis_z + chassis_h/2}"/>  <!-- chassis top -->
+  <xacro:property name="mesh_scale" value="0.001 0.001 0.001"/>
+
+  <xacro:macro name="box_inertia" params="m x y z">
+    <inertia ixx="${m*(y*y+z*z)/12}" ixy="0" ixz="0" iyy="${m*(x*x+z*z)/12}" iyz="0" izz="${m*(x*x+y*y)/12}"/>
+  </xacro:macro>
+  <xacro:macro name="cyl_inertia" params="m r h">
+    <inertia ixx="${m*(3*r*r+h*h)/12}" ixy="0" ixz="0" iyy="${m*(3*r*r+h*h)/12}" iyz="0" izz="${m*r*r/2}"/>
+  </xacro:macro>
+
+  <material name="body"><color rgba="0.85 0.45 0.10 1"/></material>
+  <material name="dark"><color rgba="0.15 0.15 0.15 1"/></material>
+  <material name="grey"><color rgba="0.6 0.6 0.6 1"/></material>
+
+  <!-- base_footprint on the ground, base_link on the wheel axle -->
+  <link name="base_footprint"/>
+  <joint name="base_joint" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 ${wheel_r}"/>
+  </joint>
+
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 ${chassis_z}"/>
+      <geometry><mesh filename="package://planguard_description/meshes/chassis.stl" scale="${mesh_scale}"/></geometry>
+      <material name="body"/>
+    </visual>
+    <collision name="chassis_collision">
+      <origin xyz="0 0 ${chassis_z}"/>
+      <geometry><box size="${chassis_l} ${chassis_w} ${chassis_h}"/></geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 ${chassis_z}"/>
+      <mass value="${chassis_mass}"/>
+      <xacro:box_inertia m="${chassis_mass}" x="${chassis_l}" y="${chassis_w}" z="${chassis_h}"/>
+    </inertial>
+  </link>
+
+  <xacro:macro name="drive_wheel" params="side y">
+    <link name="${side}_wheel">
+      <visual>
+        <origin rpy="${-pi/2} 0 0"/>
+        <geometry><cylinder radius="${wheel_r}" length="${wheel_w}"/></geometry>
+        <material name="dark"/>
+      </visual>
+      <!-- Sphere collision: a single contact point on the wheel mid-plane, so the effective
+           track equals wheel_separation and wheel odometry is exact. A cylinder touches at
+           both rims and scrubs when turning (measured: 4 deg heading error per 45 deg turn
+           with a 4 cm cylinder, 0.9 deg with a 1 cm disc). Cost: the collision footprint is
+           wider than the visual wheel (half-width 0.23 m); shields and evaluator use it. -->
+      <collision>
+        <geometry><sphere radius="${wheel_r}"/></geometry>
+      </collision>
+      <inertial>
+        <origin rpy="${-pi/2} 0 0"/>
+        <mass value="${wheel_mass}"/>
+        <xacro:cyl_inertia m="${wheel_mass}" r="${wheel_r}" h="${wheel_w}"/>
+      </inertial>
+    </link>
+    <joint name="${side}_wheel_joint" type="continuous">
+      <parent link="base_link"/>
+      <child link="${side}_wheel"/>
+      <origin xyz="0 ${y} 0"/>
+      <axis xyz="0 1 0"/>
+    </joint>
+    <gazebo reference="${side}_wheel">
+      <mu1>1.0</mu1><mu2>1.0</mu2>
+    </gazebo>
+  </xacro:macro>
+  <xacro:drive_wheel side="left" y="${wheel_y}"/>
+  <xacro:drive_wheel side="right" y="${-wheel_y}"/>
+
+  <xacro:macro name="caster" params="name x">
+    <link name="${name}_caster">
+      <visual><geometry><sphere radius="${caster_r}"/></geometry><material name="grey"/></visual>
+      <collision><geometry><sphere radius="${caster_r}"/></geometry></collision>
+      <inertial>
+        <mass value="0.05"/>
+        <inertia ixx="1e-5" ixy="0" ixz="0" iyy="1e-5" iyz="0" izz="1e-5"/>
+      </inertial>
+    </link>
+    <joint name="${name}_caster_joint" type="fixed">
+      <parent link="base_link"/>
+      <child link="${name}_caster"/>
+      <origin xyz="${x} 0 ${caster_z}"/>
+    </joint>
+    <gazebo reference="${name}_caster">
+      <mu1>0.0</mu1><mu2>0.0</mu2>
+    </gazebo>
+  </xacro:macro>
+  <xacro:caster name="front" x="${caster_x}"/>
+  <xacro:caster name="rear" x="${-caster_x}"/>
+
+  <!-- L-shaped lidar bracket (custom CAD part) -->
+  <link name="lidar_bracket">
+    <visual>
+      <geometry><mesh filename="package://planguard_description/meshes/lidar_bracket.stl" scale="${mesh_scale}"/></geometry>
+      <material name="grey"/>
+    </visual>
+    <inertial>
+      <origin xyz="-0.03 0 0.04"/>
+      <mass value="0.1"/>
+      <inertia ixx="1e-4" ixy="0" ixz="0" iyy="1e-4" iyz="0" izz="1e-4"/>
+    </inertial>
+  </link>
+  <joint name="lidar_bracket_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="lidar_bracket"/>
+    <origin xyz="0 0 ${bracket_z}"/>
+  </joint>
+
+  <link name="lidar_link">
+    <visual>
+      <geometry><cylinder radius="${lidar_r}" length="${lidar_h}"/></geometry>
+      <material name="dark"/>
+    </visual>
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="1e-5" ixy="0" ixz="0" iyy="1e-5" iyz="0" izz="1e-5"/>
+    </inertial>
+  </link>
+  <joint name="lidar_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="lidar_link"/>
+    <origin xyz="0 0 ${lidar_z}"/>
+  </joint>
+
+  <!-- ===== Gazebo (Harmonic) plugins and sensors ===== -->
+  <gazebo reference="lidar_link">
+    <sensor name="lidar" type="gpu_lidar">
+      <topic>scan</topic>
+      <gz_frame_id>lidar_link</gz_frame_id>
+      <update_rate>10</update_rate>
+      <always_on>true</always_on>
+      <visualize>false</visualize>
+      <lidar>
+        <scan>
+          <horizontal><samples>360</samples><resolution>1</resolution>
+            <min_angle>-3.14159265</min_angle><max_angle>3.14159265</max_angle></horizontal>
+          <vertical><samples>1</samples><min_angle>0</min_angle><max_angle>0</max_angle></vertical>
+        </scan>
+        <range><min>0.12</min><max>8.0</max><resolution>0.01</resolution></range>
+        <noise><type>gaussian</type><mean>0.0</mean><stddev>0.01</stddev></noise>
+      </lidar>
+    </sensor>
+  </gazebo>
+
+  <gazebo>
+    <plugin filename="gz-sim-diff-drive-system" name="gz::sim::systems::DiffDrive">
+      <left_joint>left_wheel_joint</left_joint>
+      <right_joint>right_wheel_joint</right_joint>
+      <wheel_separation>${2*wheel_y}</wheel_separation>
+      <wheel_radius>${wheel_r}</wheel_radius>
+      <max_linear_acceleration>1.0</max_linear_acceleration>
+      <min_linear_acceleration>-1.0</min_linear_acceleration>
+      <max_angular_acceleration>3.0</max_angular_acceleration>
+      <min_angular_acceleration>-3.0</min_angular_acceleration>
+      <max_linear_velocity>0.6</max_linear_velocity>
+      <min_linear_velocity>-0.6</min_linear_velocity>
+      <max_angular_velocity>2.0</max_angular_velocity>
+      <min_angular_velocity>-2.0</min_angular_velocity>
+      <topic>cmd_vel</topic>
+      <odom_topic>odom</odom_topic>
+      <odom_publish_frequency>30</odom_publish_frequency>
+      <tf_topic>tf</tf_topic>
+      <frame_id>odom</frame_id>
+      <child_frame_id>base_footprint</child_frame_id>
+    </plugin>
+    <!-- Ground-truth pose for the evaluator only (never read by controller or shield) -->
+    <plugin filename="gz-sim-odometry-publisher-system" name="gz::sim::systems::OdometryPublisher">
+      <odom_frame>world</odom_frame>
+      <robot_base_frame>base_footprint</robot_base_frame>
+      <odom_topic>ground_truth/odom</odom_topic>
+      <odom_publish_frequency>30</odom_publish_frequency>
+      <dimensions>2</dimensions>
+    </plugin>
+    <plugin filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher">
+      <topic>joint_states</topic>
+    </plugin>
+  </gazebo>
+</robot>
