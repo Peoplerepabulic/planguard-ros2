@@ -1,0 +1,1 @@
+{"outcome": "COLLISION", "t_end": 8.568, "x_end": -0.0284, "y_end": -0.1922, "hit": "rand_1", "min_clearance": 0.0, "min_clearance_with": "rand_1", "path_length": 4.1246, "interventions": 0, "active_frac": 0.0, "raw_cmds": 172, "wall_s": 9.53, "rtf": 0.899}

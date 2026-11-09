@@ -89,6 +89,7 @@ def fig_outcomes(df: pd.DataFrame, out: Path) -> None:
     ax.set_yticks(range(len(MODES)))
     ax.set_yticklabels([MODE_LABEL[m] for m in reversed(MODES)], color=INK, fontsize=10)
     ax.set_xlim(0, n)
+    ax.set_xticks(range(0, n + 1, 5))
     ax.set_xlabel(f"trials (n = {n} paired seeds per shield)", color=INK2, fontsize=9)
     ax.xaxis.grid(True, color=GRID, linewidth=0.6)
     ax.set_axisbelow(True)
@@ -107,10 +108,16 @@ def fig_offset(df: pd.DataFrame, feats: pd.DataFrame, out: Path) -> None:
     fig.patch.set_facecolor(SURF)
     style(ax)
     for i, m in enumerate(reversed(MODES)):
-        sub = d[(d["mode"] == m) & (d["n_blockers"] > 0)]
+        sub = d[(d["mode"] == m) & (d["n_blockers"] > 0)].sort_values("min_abs_lateral")
+        xs = sub["min_abs_lateral"].to_numpy()
+        ys = [float(i)] * len(xs)
+        for k in range(1, len(xs)):          # dodge near-coincident points vertically
+            if xs[k] - xs[k - 1] < 0.012:
+                ys[k - 1], ys[k] = i + 0.13, i - 0.13
+        sub = sub.assign(y=ys)
         for o in OUTCOMES:
             s = sub[sub["outcome"] == o]
-            ax.scatter(s["min_abs_lateral"], [i] * len(s), s=46, marker=OUT_MARK[o], color=OUT_COLOR[o],
+            ax.scatter(s["min_abs_lateral"], s["y"], s=46, marker=OUT_MARK[o], color=OUT_COLOR[o],
                        edgecolor=SURF, linewidth=1.2, zorder=3, label=o.title() if i == 0 else None)
     ax.set_yticks(range(len(MODES)))
     ax.set_yticklabels([MODE_LABEL[m] for m in reversed(MODES)], color=INK, fontsize=10)
@@ -121,8 +128,8 @@ def fig_offset(df: pd.DataFrame, feats: pd.DataFrame, out: Path) -> None:
     ax.set_axisbelow(True)
     ax.legend(ncol=3, frameon=False, fontsize=8.5, loc="lower center", bbox_to_anchor=(0.5, 1.0),
               labelcolor=INK2)
-    nb = int((feats["n_blockers"] == 0).sum())
-    ax.set_title(f"Where each shield fails (seeds with a blocked straight path; {nb} unblocked seeds omitted)",
+    nb = int((feats["n_blockers"] > 0).sum())
+    ax.set_title(f"Outcome vs. how centred the blocking obstacle is ({nb} blocked seeds)",
                  color=INK, fontsize=10, loc="left", pad=22)
     fig.tight_layout()
     fig.savefig(out, facecolor=SURF)
@@ -141,16 +148,17 @@ def fig_traj(seed: int, tag: str, res: Path, df: pd.DataFrame, out: Path, title:
     ax.add_patch(plt.Circle(spec["goal"], 0.3, fill=False, ls="--", color=MUTED, lw=1))
     ax.text(spec["goal"][0], spec["goal"][1] + 0.42, "goal", ha="center", color=INK2, fontsize=8)
     ax.text(spec["start"][0], spec["start"][1] - 0.45, "start", ha="center", color=INK2, fontsize=8)
-    for m in MODES:
+    widths = {"cbf": 4.0, "brake": 2.4, "off": 1.0}   # nested strokes: shared segments stay visible
+    for z, m in enumerate(["cbf", "brake", "off"]):
         p = res / "traj" / f"{tag}_s{seed:03d}_{m}.csv"
         if not p.exists():
             continue
         t = pd.read_csv(p)
         row = df[(df["seed"] == seed) & (df["mode"] == m)].iloc[0]
-        ax.plot(t["x"], t["y"], color=MODE_COLOR[m], lw=2, zorder=3,
+        ax.plot(t["x"], t["y"], color=MODE_COLOR[m], lw=widths[m], zorder=3 + z, solid_capstyle="round",
                 label=f"{MODE_LABEL[m]}: {row['outcome'].lower()} ({row['t_end']:.0f} s)")
         ax.scatter(t["x"].iloc[-1], t["y"].iloc[-1], s=42, color=MODE_COLOR[m], marker=OUT_MARK[row["outcome"]],
-                   edgecolor=SURF, linewidth=1.2, zorder=4)
+                   edgecolor=SURF, linewidth=1.2, zorder=7)
     ax.set_aspect("equal")
     ax.set_xlim(-4.1, 4.1)
     ax.set_ylim(-4.1, 4.1)
@@ -158,8 +166,11 @@ def fig_traj(seed: int, tag: str, res: Path, df: pd.DataFrame, out: Path, title:
     ax.set_yticks(range(-4, 5, 2))
     ax.grid(True, color=GRID, linewidth=0.5)
     ax.set_axisbelow(True)
-    ax.legend(frameon=False, fontsize=8, loc="upper left", labelcolor=INK2)
-    ax.set_title(title, color=INK, fontsize=10, loc="left")
+    h, lab = ax.get_legend_handles_labels()
+    order = [lab.index(x) for x in sorted(lab, key=lambda s: [MODE_LABEL[m] for m in MODES].index(s.split(":")[0]))]
+    ax.legend([h[i] for i in order], [lab[i] for i in order], frameon=False, fontsize=8, loc="upper left",
+              labelcolor=INK2)
+    ax.set_title(title + "\nseeded obstacles dark grey, fixed layout light grey", color=INK, fontsize=9.5, loc="left")
     fig.tight_layout()
     fig.savefig(out, facecolor=SURF)
     plt.close(fig)

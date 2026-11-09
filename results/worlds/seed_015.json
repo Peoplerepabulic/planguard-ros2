@@ -1,0 +1,126 @@
+{
+ "seed": 15,
+ "start": [
+  -3.0,
+  -3.0
+ ],
+ "goal": [
+  3.0,
+  3.0
+ ],
+ "arena_half": 4.0,
+ "obstacle_height": 0.5,
+ "obstacles": [
+  {
+   "name": "wall_n",
+   "type": "box",
+   "x": 0.0,
+   "y": 4.05,
+   "sx": 8.2,
+   "sy": 0.1,
+   "yaw": 0.0
+  },
+  {
+   "name": "wall_s",
+   "type": "box",
+   "x": 0.0,
+   "y": -4.05,
+   "sx": 8.2,
+   "sy": 0.1,
+   "yaw": 0.0
+  },
+  {
+   "name": "wall_e",
+   "type": "box",
+   "x": 4.05,
+   "y": 0.0,
+   "sx": 0.1,
+   "sy": 8.2,
+   "yaw": 0.0
+  },
+  {
+   "name": "wall_w",
+   "type": "box",
+   "x": -4.05,
+   "y": 0.0,
+   "sx": 0.1,
+   "sy": 8.2,
+   "yaw": 0.0
+  },
+  {
+   "name": "fixed_box_1",
+   "type": "box",
+   "x": -1.5,
+   "y": 1.0,
+   "sx": 0.6,
+   "sy": 0.6,
+   "yaw": 0.0
+  },
+  {
+   "name": "fixed_cyl_1",
+   "type": "cylinder",
+   "x": 0.5,
+   "y": 2.5,
+   "r": 0.25
+  },
+  {
+   "name": "fixed_box_2",
+   "type": "box",
+   "x": -2.8,
+   "y": 0.5,
+   "sx": 0.5,
+   "sy": 0.8,
+   "yaw": 0.0
+  },
+  {
+   "name": "fixed_cyl_2",
+   "type": "cylinder",
+   "x": 2.0,
+   "y": -1.0,
+   "r": 0.3
+  },
+  {
+   "name": "fixed_box_3",
+   "type": "box",
+   "x": 1.0,
+   "y": -2.5,
+   "sx": 0.7,
+   "sy": 0.4,
+   "yaw": 0.0
+  },
+  {
+   "name": "fixed_cyl_3",
+   "type": "cylinder",
+   "x": -0.5,
+   "y": -2.0,
+   "r": 0.2
+  },
+  {
+   "name": "fixed_box_4",
+   "type": "box",
+   "x": 2.6,
+   "y": 0.8,
+   "sx": 0.5,
+   "sy": 0.5,
+   "yaw": 0.0
+  },
+  {
+   "type": "cylinder",
+   "r": 0.1816025449529496,
+   "name": "rand_0",
+   "x": 0.3489,
+   "y": -1.0323,
+   "s": 0.443,
+   "lateral": -0.9767
+  },
+  {
+   "type": "cylinder",
+   "r": 0.2862701328802829,
+   "name": "rand_1",
+   "x": 2.1668,
+   "y": 0.8004,
+   "s": 0.7473,
+   "lateral": -0.9662
+  }
+ ]
+}

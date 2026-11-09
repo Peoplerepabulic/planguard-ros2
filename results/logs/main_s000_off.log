@@ -1,0 +1,43 @@
+[INFO] [launch]: All log files can be found below /root/.ros/log/2026-11-09-02-10-17-591564-vm-951
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [gazebo-1]: process started with pid [970]
+[INFO] [robot_state_publisher-2]: process started with pid [972]
+[INFO] [create-3]: process started with pid [975]
+[INFO] [parameter_bridge-4]: process started with pid [982]
+[INFO] [cruise_controller-5]: process started with pid [986]
+[INFO] [safety_shield-6]: process started with pid [988]
+[robot_state_publisher-2] [INFO] [1794211817.908889191] [robot_state_publisher]: Robot initialized
+[cruise_controller-5] [INFO] [1794211817.962929442] [cruise_controller]: goal=(3.00, 3.00) origin=(-3.00, -3.00, 0.00)
+[safety_shield-6] [INFO] [1794211817.979337084] [safety_shield]: mode=off  brake[d_stop=0.20 d_slow=0.70]  cbf[alpha=1.50 circles=2 margin=0.05]
+[create-3] [INFO] [1794211817.983528482] [ros_gz_sim]: Requesting list of world names.
+[create-3] [INFO] [1794211818.506456041] [ros_gz_sim]: Waiting messages on topic [robot_description].
+[create-3] [INFO] [1794211818.518436766] [ros_gz_sim]: Entity creation successful.
+[INFO] [create-3]: process has finished cleanly [pid 975]
+[parameter_bridge-4] [INFO] [1794211819.005889591] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/clock (gz.msgs.Clock) -> /clock (rosgraph_msgs/msg/Clock)] (Lazy 0)
+[parameter_bridge-4] [INFO] [1794211819.007590513] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/scan (gz.msgs.LaserScan) -> /scan (sensor_msgs/msg/LaserScan)] (Lazy 0)
+[parameter_bridge-4] [INFO] [1794211819.011430409] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/odom (gz.msgs.Odometry) -> /odom (nav_msgs/msg/Odometry)] (Lazy 0)
+[parameter_bridge-4] [INFO] [1794211819.014011644] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/ground_truth/odom (gz.msgs.Odometry) -> /ground_truth/odom (nav_msgs/msg/Odometry)] (Lazy 0)
+[parameter_bridge-4] [INFO] [1794211819.014948860] [ros_gz_bridge]: Creating ROS->GZ Bridge: [/cmd_vel (geometry_msgs/msg/Twist) -> /cmd_vel (gz.msgs.Twist)] (Lazy 0)
+[parameter_bridge-4] [INFO] [1794211819.016397899] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/tf (gz.msgs.Pose_V) -> /tf (tf2_msgs/msg/TFMessage)] (Lazy 0)
+[parameter_bridge-4] [INFO] [1794211819.018494910] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/joint_states (gz.msgs.Model) -> /joint_states (sensor_msgs/msg/JointState)] (Lazy 0)
+[gazebo-1] [1;33mWarning [Utils.cc:132][0m [/sdf/model[@name="planguard"]/link[@name="base_footprint"]/sensor[@name="lidar"]/gz_frame_id:<urdf-string>:L0]: XML Element[gz_frame_id], child of element[sensor], not defined in SDF. Copying[gz_frame_id] as children of [sensor].
+[parameter_bridge-4] [INFO] [1794211820.621524691] [ros_gz_bridge]: Passing message from ROS geometry_msgs/msg/Twist to Gazebo gz.msgs.Twist (showing msg only once per type)
+[cruise_controller-5] [INFO] [1794211839.851005954] [cruise_controller]: GOAL_REACHED t=17.80 pos=(2.797, 2.786) dist=0.295
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[safety_shield-6] [INFO] [1794211839.994957228] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[parameter_bridge-4] [INFO] [1794211839.994963323] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[INFO] [safety_shield-6]: sending signal 'SIGINT' to process[safety_shield-6]
+[INFO] [cruise_controller-5]: sending signal 'SIGINT' to process[cruise_controller-5]
+[INFO] [parameter_bridge-4]: sending signal 'SIGINT' to process[parameter_bridge-4]
+[INFO] [robot_state_publisher-2]: sending signal 'SIGINT' to process[robot_state_publisher-2]
+[ERROR] [cruise_controller-5]: process has died [pid 986, exit code -2, cmd '/home/claude/planguard-ros2/install/planguard_control/lib/planguard_control/cruise_controller --ros-args --params-file /home/claude/planguard-ros2/install/planguard_control/share/planguard_control/config/control.yaml --params-file /tmp/launch_params_gbdqn44z'].
+[INFO] [gazebo-1]: sending signal 'SIGINT' to process[gazebo-1]
+[robot_state_publisher-2] [INFO] [1794211839.995277784] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[cruise_controller-5] [INFO] [1794211839.996326537] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[safety_shield-6] [INFO] [1794211840.013904111] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[parameter_bridge-4] [INFO] [1794211840.021499741] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[ERROR] [robot_state_publisher-2]: process has died [pid 972, exit code -2, cmd '/home/claude/mamba/envs/ros/lib/robot_state_publisher/robot_state_publisher --ros-args --params-file /tmp/launch_params_p781qs0i'].
+[ERROR] [gazebo-1]: process has died [pid 970, exit code -2, cmd 'ruby /home/claude/mamba/envs/ros/bin/gz sim -r -s --headless-rendering /home/claude/planguard-ros2/results/worlds/seed_000.sdf --force-version 8'].
+[INFO] [launch]: process[gazebo-1] was required: shutting down launched system
+[INFO] [parameter_bridge-4]: process has finished cleanly [pid 982]
+[INFO] [safety_shield-6]: process has finished cleanly [pid 988]

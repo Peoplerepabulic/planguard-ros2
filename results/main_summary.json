@@ -1,0 +1,130 @@
+{
+ "tag": "main",
+ "n_seeds": 20,
+ "errors": 0,
+ "modes": {
+  "off": {
+   "n": 20,
+   "goal": 7,
+   "timeout": 0,
+   "collision": 13,
+   "collision_rate": 0.65,
+   "collision_ci95": [
+    0.4328542750684442,
+    0.818808176876017
+   ],
+   "goal_rate": 0.35,
+   "goal_ci95": [
+    0.18119182312398308,
+    0.5671457249315559
+   ],
+   "median_time_to_goal": 17.714,
+   "median_min_clearance": 0.0067,
+   "mean_interventions": 0.0,
+   "mean_active_frac": 0.0
+  },
+  "brake": {
+   "n": 20,
+   "goal": 7,
+   "timeout": 13,
+   "collision": 0,
+   "collision_rate": 0.0,
+   "collision_ci95": [
+    0.0,
+    0.16112516018512965
+   ],
+   "goal_rate": 0.35,
+   "goal_ci95": [
+    0.18119182312398308,
+    0.5671457249315559
+   ],
+   "median_time_to_goal": 17.714,
+   "median_min_clearance": 0.2023,
+   "mean_interventions": 1.55,
+   "mean_active_frac": 0.6126900000000001
+  },
+  "cbf": {
+   "n": 20,
+   "goal": 12,
+   "timeout": 8,
+   "collision": 0,
+   "collision_rate": 0.0,
+   "collision_ci95": [
+    0.0,
+    0.16112516018512965
+   ],
+   "goal_rate": 0.6,
+   "goal_ci95": [
+    0.3865814992347542,
+    0.7811934687282198
+   ],
+   "median_time_to_goal": 18.122,
+   "median_min_clearance": 0.14165,
+   "mean_interventions": 1.65,
+   "mean_active_frac": 0.5285550000000001
+  }
+ },
+ "tests": {
+  "collision off vs brake": {
+   "a_only": 13,
+   "b_only": 0,
+   "p": 0.000244140625
+  },
+  "collision off vs cbf": {
+   "a_only": 13,
+   "b_only": 0,
+   "p": 0.000244140625
+  },
+  "goal cbf vs brake": {
+   "a_only": 5,
+   "b_only": 0,
+   "p": 0.0625
+  },
+  "goal cbf vs off": {
+   "a_only": 5,
+   "b_only": 0,
+   "p": 0.0625
+  },
+  "min_clearance cbf vs brake (Wilcoxon)": {
+   "median_diff": -0.058700000000000016,
+   "p": 0.0936033730440888
+  },
+  "time_to_goal cbf vs off, seeds where both reach (Wilcoxon)": {
+   "n": 7,
+   "median_diff": 0.13600000000000279,
+   "p": 0.0625
+  }
+ },
+ "by_blocked": {
+  "brake|clear": {
+   "COLLISION": 0,
+   "GOAL": 6,
+   "TIMEOUT": 0
+  },
+  "brake|blocked": {
+   "COLLISION": 0,
+   "GOAL": 1,
+   "TIMEOUT": 13
+  },
+  "cbf|clear": {
+   "COLLISION": 0,
+   "GOAL": 6,
+   "TIMEOUT": 0
+  },
+  "cbf|blocked": {
+   "COLLISION": 0,
+   "GOAL": 6,
+   "TIMEOUT": 8
+  },
+  "off|clear": {
+   "COLLISION": 0,
+   "GOAL": 6,
+   "TIMEOUT": 0
+  },
+  "off|blocked": {
+   "COLLISION": 13,
+   "GOAL": 1,
+   "TIMEOUT": 0
+  }
+ }
+}

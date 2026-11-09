@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-24.04
+    container: ros:jazzy-ros-base
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends ros-jazzy-xacro liburdfdom-tools
+          rosdep update --rosdistro jazzy
+          rosdep install --from-paths src/planguard_control --ignore-src -y --rosdistro jazzy
+
+      - name: Build
+        run: |
+          source /opt/ros/jazzy/setup.bash
+          colcon build --packages-select planguard_control planguard_description \
+            --cmake-args -DCMAKE_BUILD_TYPE=Release
+
+      - name: Unit tests (gtest)
+        run: |
+          source /opt/ros/jazzy/setup.bash
+          colcon test --packages-select planguard_control --event-handlers console_direct+
+          colcon test-result --verbose
+
+      - name: Check robot model (xacro -> check_urdf)
+        run: |
+          source /opt/ros/jazzy/setup.bash
+          source install/setup.bash
+          xacro src/planguard_description/urdf/robot.urdf.xacro > /tmp/planguard.urdf
+          check_urdf /tmp/planguard.urdf

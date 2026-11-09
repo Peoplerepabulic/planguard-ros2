@@ -117,7 +117,8 @@ def main() -> None:
                                      capture_output=True, text=True).stdout.strip()
     except Exception:  # noqa: BLE001
         pass
-    json.dump(meta, open(out / f"{a.tag}_meta.json", "w"), indent=1)
+    with open(out / f"{a.tag}_meta.jsonl", "a") as mf:   # one line per invocation (chunked runs)
+        mf.write(json.dumps(meta) + "\n")
 
     csv_path = out / f"{a.tag}_trials.csv"
     new = not csv_path.exists()

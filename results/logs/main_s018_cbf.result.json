@@ -1,0 +1,1 @@
+{"outcome": "TIMEOUT", "t_end": 90.032, "x_end": 0.3524, "y_end": 0.6323, "hit": "", "min_clearance": 0.126, "min_clearance_with": "rand_0", "path_length": 8.6987, "interventions": 2, "active_frac": 0.9323, "raw_cmds": 1801, "wall_s": 99.7, "rtf": 0.903}
